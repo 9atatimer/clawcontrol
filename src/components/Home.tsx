@@ -144,13 +144,13 @@ export function Home({ context }: Props) {
       </scrollbox>
 
       {/* Sticky Command Input */}
-      <box flexDirection="column" paddingLeft={0} paddingRight={0} paddingTop={1}>
+      <box flexDirection="column" paddingLeft={0} paddingRight={0} paddingTop={0}>
         {error && (
-          <box marginBottom={1}>
+          <box marginBottom={0}>
             <text fg="red">{error}</text>
           </box>
         )}
-        <text fg="cyan" marginBottom={0.5}>{"> Enter command:"}</text>
+        {/* <text fg="cyan" marginBottom={0.5}>{"> Enter command:"}</text> */}
         <box
           // borderStyle="single"
           // borderColor="gray"
@@ -168,6 +168,7 @@ export function Home({ context }: Props) {
               value={inputValue}
               placeholder="Type a command (e.g., /new)..."
               focused
+              width="100%"
               onInput={(value) => setInputValue(value)}
               onSubmit={(value) => {
                 if (typeof value === "string" && typeof value.trim === "function" && value.trim()) {

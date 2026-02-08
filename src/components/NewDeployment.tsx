@@ -145,11 +145,21 @@ export function NewDeployment({ context }: Props) {
     }
   };
 
-  // Handle keyboard for confirm and complete steps
+  // Handle keyboard for provider selection, confirm, and complete steps
   useKeyboard((key) => {
     const currentState = stateRef.current;
     debugLog(`useKeyboard: key=${key.name}, step=${currentState.step}`);
-    if (currentState.step === "confirm") {
+    if (currentState.step === "provider") {
+      if (key.name === "up") {
+        setSelectedProviderIndex((prev) => Math.max(0, prev - 1));
+      } else if (key.name === "down") {
+        setSelectedProviderIndex((prev) => Math.min(SUPPORTED_PROVIDERS.length - 1, prev + 1));
+      } else if (key.name === "return") {
+        handleProviderSubmit();
+      } else if (key.name === "escape") {
+        setStep("name");
+      }
+    } else if (currentState.step === "confirm") {
       if (key.name === "y" || key.name === "return") {
         handleConfirmFromRef();
       } else if (key.name === "n" || key.name === "escape") {
@@ -311,28 +321,19 @@ export function NewDeployment({ context }: Props) {
               borderStyle="single"
               borderColor="gray"
               marginTop={1}
-              height={8}
+              padding={1}
             >
-              <select
-                focused
-                options={SUPPORTED_PROVIDERS.map((p) => ({
-                  name: PROVIDER_NAMES[p],
-                  description: p !== "hetzner" ? "Coming soon" : "Recommended - US East",
-                  value: p,
-                }))}
-                onChange={(index) => {
-                  setSelectedProviderIndex(index);
-                }}
-                onSelect={(index) => {
-                  setSelectedProviderIndex(index);
-                  handleProviderSubmit();
-                }}
-                onKeyDown={(e) => {
-                  if (e.name === "escape") {
-                    setStep("name");
-                  }
-                }}
-              />
+              {SUPPORTED_PROVIDERS.map((p, i) => {
+                const isSelected = i === selectedProviderIndex;
+                const desc = p !== "hetzner" ? "Coming soon" : "Recommended - US East";
+                return (
+                  <box key={p} flexDirection="row" backgroundColor={isSelected ? "#334155" : undefined}>
+                    <text fg={isSelected ? "cyan" : "white"}>{isSelected ? "❯ " : "  "}</text>
+                    <text fg={isSelected ? "cyan" : "white"}>{PROVIDER_NAMES[p]}</text>
+                    <text fg={isSelected ? "white" : "gray"}>{" - " + desc}</text>
+                  </box>
+                );
+              })}
             </box>
             <text fg="gray" marginTop={1}>Press Enter to select, Esc to go back</text>
           </box>
